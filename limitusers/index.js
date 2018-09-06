@@ -7,14 +7,29 @@ groupNames = ["jira-administrators", "jira-software-users"]
 licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import"]
 var urls = [];
 var users = [];
-maxUsers = 80
+maxUsers = 60
 licenseSize = 100
 ctr = 0
 uctr = 0
 testMode = true;
 gaurl="https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A159202622&start-date=30daysAgo&end-date=today&metrics=ga%3Apageviews&dimensions=ga%3Adimension1&sort=-ga%3Apageviews"
-gaurlauth="&access_token=ya29.GlsQBuvFWiDyxNToj_QgMjNY9Uh2VVmCCJxWKEUUnDOcDm5BGa-s5AbV0YMsTVKy1yfhn1c5LJHF4_00yP9dIWV2f8--nt1DHZLub5WynNKnhhJTJs4X0LOHMURu"
+// gaurlauth="&access_token=ya29.GlsQBoT5cMe6nr1a03M1qDxv47iJq4OfNmGS-gFzYtgTdvr5Gav2fV0MYI-i2ycVDUE7hPh4hqTtda6141TOylWGUS8hcZPVgmmDqBAnXwap_Q-hFny8-00TrHUE"
+gaurlauth=""
 ustats=[];
+
+
+var prettyjson = require('prettyjson'); // Un-uglify JSON output
+var {google} = require('googleapis');
+var key = require('./auth.json'); // Downloaded JSON file
+ 
+var viewID = 'ga:159202622'; // Google Analytics view ID
+var analytics = google.analyticsreporting('v4'); // Used for pulling report
+var jwtClient = new google.auth.JWT(key.client_email, // For authenticating and permissions
+                                    null,
+                                    key.private_key,
+                                    ['https://www.googleapis.com/auth/analytics.readonly'],
+                                    null);
+ 
 
 for (i in groupNames) {
   urls.push(rootUrl+"/rest/api/2/group/member?groupname="+groupNames[i]+"&includeInactiveUsers=false&maxResults=100");
@@ -154,7 +169,19 @@ exports.handler = (event, context, callback) => {
   })
   }
 
+jwtClient.authorize(function (err, tokens) {
+  if (err) {
+    console.log('Reeeeejected');
+    console.log(err);
+    return;
+  } else {
+    console.log('Yup, we got authorized!');
+    console.log("tokens: ", tokens.access_token)
+    gaurlauth = "&access_token="+tokens.access_token
+  }
+
   getUserStats(1).then(setTimeout(function () { startLoop() },1000));
+});
   
 };
 
