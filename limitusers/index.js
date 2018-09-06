@@ -54,7 +54,7 @@ exports.handler = (event, context, callback) => {
         console.log("error: ",error);
         reject("error:",error)
       } else {
-        console.log("body:",body);
+        // console.log("body:",body);
         // console.log("successful: ",gaurl);
 	usb=JSON.parse(body);
 	usr=usb.rows
@@ -96,7 +96,7 @@ exports.handler = (event, context, callback) => {
     }
     users.forEach ( function loopUsers(user,index, array, done){
       //console.log(user.name)
-      console.log("user.url: ",user.url)
+      // console.log("user.url: ",user.url)
       if(user.url==undefined) {
         uctr++;
         if(array.length === uctr) 
@@ -157,7 +157,7 @@ exports.handler = (event, context, callback) => {
             // console.log("ustats[current]: "+ustats[current])
             // console.log("ustats[aarfri]: ",ustats["aarfri"])
             ustat = (ustats[current]>0) ? ustats[current] : 0;
-            users.push({name: current, date: "", pi: ustat, surl: url});
+            users.push({name: current, date: "", pi: ustat, url: url});
           }
         }
 	if(jsi.nextPage!=undefined) {
