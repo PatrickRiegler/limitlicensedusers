@@ -1,14 +1,16 @@
 var request = require('request');
 var _ = require('lodash');
 
-rootUrl = "http://devjira.oskar-ruegg.com"
+// rootUrl = "http://devjira.oskar-ruegg.com"
+rootUrl = "http://testjira.oskar-ruegg.com"
 groupNames = ["jira-administrators", "jira-software-users"]
 var urls = [];
 var users = [];
-maxUsers = 80
+maxUsers = 85
 licenseSize = 100
 ctr = 0
 uctr = 0
+testMode = false;
 
 for (i in groupNames) {
   urls.push(rootUrl+"/rest/api/2/group/member?groupname="+groupNames[i]+"&includeInactiveUsers=false&maxResults=100");
@@ -34,19 +36,26 @@ exports.handler = (event, context, callback) => {
       groupName = groupName.substring(0,groupName.indexOf("&"))
       // console.log("groupName: "+groupName)
       url = rootUrl + "/rest/api/2/group/user?groupname="+groupName+"&username="+user.name
-      // console.log(user.name)
-      // console.log("url: "+url)
-      request.delete({  
-        headers: {'Content-Type' : 'application/json' },
-        url:     url,
-        timeout: 10000
-      }, function(error, response, body){
-        //console.log("body:" + body);
-        console.log("deleted group "+groupName+" for user "+user.name)
+      console.log(user.name)
+      console.log("url: "+url)
+      if(!testMode) {
+        request.delete({  
+          headers: {'Content-Type' : 'application/json' },
+          url:     url,
+          timeout: 10000
+        }, function(error, response, body){
+          //console.log("body:" + body);
+          console.log("deleted group "+groupName+" for user "+user.name)
+          uctr++;
+          if(array.length === uctr) 
+            callback(null, 'Script Successful');
+        }).auth('techuser','techuser',true);
+      } else {
+        console.log("test mode... licenses NOT removed")
         uctr++;
         if(array.length === uctr) 
           callback(null, 'Script Successful');
-      }).auth('techuser','techuser',true);
+      } 
     })
   }
 
