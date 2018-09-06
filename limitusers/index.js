@@ -96,6 +96,12 @@ exports.handler = (event, context, callback) => {
     }
     users.forEach ( function loopUsers(user,index, array, done){
       //console.log(user.name)
+      console.log("user.url: ",user.url)
+      if(user.url==undefined) {
+        uctr++;
+        if(array.length === uctr) 
+            callback(null, 'Script Successful');
+      } else {
       groupName = user.url.substring(user.url.indexOf("groupname")+10)
       groupName = groupName.substring(0,groupName.indexOf("&"))
       // console.log("groupName: "+groupName)
@@ -120,6 +126,7 @@ exports.handler = (event, context, callback) => {
         if(array.length === uctr) 
           callback(null, 'Script Successful');
       } 
+      }
     })
   }
 
