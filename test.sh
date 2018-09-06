@@ -1,3 +1,3 @@
 cd limitusers
-lambda-local -l index.js -h handler -e event.json
+lambda-local -l index.js -h handler -e event.json -t 10
 
