@@ -1,5 +1,8 @@
 var request = require('request');
 var _ = require('lodash');
+var ua = require('universal-analytics');
+
+var visitor = ua('UA-105697068-1', 'LimitLicensesLambda', {strictCidFormat: false});
 
 groupNames = ["jira-administrators", "jira-software-users"]
 licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import"]
@@ -86,6 +89,7 @@ exports.handler = (event, context, callback) => {
   function identifyUsers() {
     // console.log("users.length: ",users.length)
     users = _.uniqBy(users, "name");
+    usersBefore = users.length;
     licensedUsers.forEach ( function (user, index, array, done) { /* console.log("user: ",user); */ users = users.filter(function(obj) { return obj.name !== user; } ); maxUsers--; }) 
     users.reverse()
     if(users[0].pi<1) {
@@ -96,9 +100,16 @@ exports.handler = (event, context, callback) => {
     users = users.slice(maxUsers)
     console.log(users)
     console.log("users.length: ",users.length)
+    usersAfter = usersBefore - users.length
     if(users.length<1) {
       console.log("number of users is smaller than allowed users - no action required")
-      callback(null, 'Script Successful');
+
+            visitor.set('cm1', maxUsers);
+            visitor.set('cm2', usersBefore);
+            visitor.set('cm3', usersAfter);
+      visitor.pageview("/Lambda/LimitLicensedUsers", "http://jira.oskar-ruegg.com/", "Lambda - Limit Licensed Users").send()
+
+      setTimeout(function () { callback(null, 'Script Successful'); }, 1000)
     }
     users.forEach ( function loopUsers(user,index, array, done){
       //console.log(user.name)
@@ -123,8 +134,15 @@ exports.handler = (event, context, callback) => {
           //console.log("body:" + body);
           console.log("deleted group "+groupName+" for user "+user.name)
           uctr++;
-          if(array.length === uctr) 
-            callback(null, 'Script Successful');
+          if(array.length === uctr) {
+
+            visitor.set('cm1', maxUsers);
+            visitor.set('cm2', usersBefore);
+            visitor.set('cm3', usersAfter);
+            visitor.pageview("/Lambda/LimitLicensedUsers", "http://jira.oskar-ruegg.com/", "Lambda - Limit Licensed Users").send()
+
+            setTimeout(function () { callback(null, 'Script Successful'); }, 1000)
+          }
         }).auth('techuser','techuser',true);
       } else {
         console.log("test mode... licenses NOT removed")
