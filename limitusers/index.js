@@ -5,6 +5,8 @@ groupNames = ["jira-administrators", "jira-software-users"]
 licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import"]
 var urls = [];
 var users = [];
+urls.length = 0;
+users.length = 0;
 ctr = 0
 uctr = 0
 gaurl="https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A159202622&start-date=30daysAgo&end-date=today&metrics=ga%3Apageviews&dimensions=ga%3Adimension1&sort=-ga%3Apageviews"
