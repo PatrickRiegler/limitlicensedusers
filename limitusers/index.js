@@ -30,9 +30,9 @@ var jwtClient = new google.auth.JWT(key.client_email, // For authenticating and 
 
 exports.handler = (event, context, callback) => {
 
-  maxUsers = (event.maxUsers) ? event.maxUsers : 80;
-  licenseSize = (event.licenseSize) ? event.licenseSize : 100;
-  testMode = (event.testMode) ? event.testMode : true;
+  maxUsers = (parseInt(event.maxUsers)) ? parseInt(event.maxUsers) : 80;
+  licenseSize = (parseInt(event.licenseSize)) ? parseInt(event.licenseSize) : 100;
+  testMode = (event.testMode==="true") ? true : (event.testMode==="false") ? false : true;
 
   // rootUrl = "http://devjira.oskar-ruegg.com"
   domain = (event.domain) ? event.domain : "testjira.oskar-ruegg.com";
@@ -82,7 +82,7 @@ exports.handler = (event, context, callback) => {
 
 
   function identifyUsers() {
-    users.sort((a, b) => parseFloat(a.pi) - parseFloat(b.pi))
+    // console.log("users.length: ",users.length)
     users = _.uniqBy(users, "name");
     licensedUsers.forEach ( function (user, index, array, done) { /* console.log("user: ",user); */ users = users.filter(function(obj) { return obj.name !== user; } ); maxUsers--; }) 
     users.reverse()
