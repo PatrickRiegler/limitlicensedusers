@@ -1,17 +1,12 @@
 var request = require('request');
 var _ = require('lodash');
 
-// rootUrl = "http://devjira.oskar-ruegg.com"
-rootUrl = "http://testjira.oskar-ruegg.com"
 groupNames = ["jira-administrators", "jira-software-users"]
 licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import"]
 var urls = [];
 var users = [];
-maxUsers = 60
-licenseSize = 100
 ctr = 0
 uctr = 0
-testMode = true;
 gaurl="https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A159202622&start-date=30daysAgo&end-date=today&metrics=ga%3Apageviews&dimensions=ga%3Adimension1&sort=-ga%3Apageviews"
 // gaurlauth="&access_token=ya29.GlsQBoT5cMe6nr1a03M1qDxv47iJq4OfNmGS-gFzYtgTdvr5Gav2fV0MYI-i2ycVDUE7hPh4hqTtda6141TOylWGUS8hcZPVgmmDqBAnXwap_Q-hFny8-00TrHUE"
 gaurlauth=""
@@ -31,14 +26,23 @@ var jwtClient = new google.auth.JWT(key.client_email, // For authenticating and 
                                     null);
  
 
-for (i in groupNames) {
-  urls.push(rootUrl+"/rest/api/2/group/member?groupname="+groupNames[i]+"&includeInactiveUsers=false&maxResults=100");
-  //console.log(urls);
-}
-console.log("urls: "+urls);
 
 
 exports.handler = (event, context, callback) => {
+
+  maxUsers = (event.maxUsers) ? event.maxUsers : 80;
+  licenseSize = (event.licenseSize) ? event.licenseSize : 100;
+  testMode = (event.testMode) ? event.testMode : true;
+
+  // rootUrl = "http://devjira.oskar-ruegg.com"
+  domain = (event.domain) ? event.domain : "testjira.oskar-ruegg.com";
+  rootUrl = "http://"+domain
+
+  for (i in groupNames) {
+    urls.push(rootUrl+"/rest/api/2/group/member?groupname="+groupNames[i]+"&includeInactiveUsers=false&maxResults=100");
+    //console.log(urls);
+  }
+  console.log("urls: "+urls);
 
   function getUserStats() {
     return new Promise((resolve,reject) => {
