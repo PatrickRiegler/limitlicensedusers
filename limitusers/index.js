@@ -1,33 +1,34 @@
-var request = require('request');
-var _ = require('lodash');
-var ua = require('universal-analytics');
 
-var visitor = ua('UA-105697068-1', 'LimitLicensesLambda', {strictCidFormat: false});
+exports.handler = (event, context, callback) => {
 
-groupNames = ["jira-administrators", "jira-software-users"]
-licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import"]
-ctr = 0
-uctr = 0
-gaurl="https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A159202622&start-date=30daysAgo&end-date=today&metrics=ga%3Apageviews&dimensions=ga%3Adimension1&sort=-ga%3Apageviews"
-// gaurlauth="&access_token=ya29.GlsQBoT5cMe6nr1a03M1qDxv47iJq4OfNmGS-gFzYtgTdvr5Gav2fV0MYI-i2ycVDUE7hPh4hqTtda6141TOylWGUS8hcZPVgmmDqBAnXwap_Q-hFny8-00TrHUE"
-gaurlauth=""
-ustats=[];
+  var request = require('request');
+  var _ = require('lodash');
+  var ua = require('universal-analytics');
+
+  var visitor = ua('UA-105697068-1', 'LimitLicensesLambda', {strictCidFormat: false});
+
+  groupNames = ["jira-administrators", "jira-software-users"]
+  licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import"]
+  ctr = 0
+  uctr = 0
+  gaurl="https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A159202622&start-date=30daysAgo&end-date=today&metrics=ga%3Apageviews&dimensions=ga%3Adimension1&sort=-ga%3Apageviews"
+  // gaurlauth="&access_token=ya29.GlsQBoT5cMe6nr1a03M1qDxv47iJq4OfNmGS-gFzYtgTdvr5Gav2fV0MYI-i2ycVDUE7hPh4hqTtda6141TOylWGUS8hcZPVgmmDqBAnXwap_Q-hFny8-00TrHUE"
+  gaurlauth=""
+  ustats=[];
 
 
-var prettyjson = require('prettyjson'); // Un-uglify JSON output
-var {google} = require('googleapis');
-var key = require('./auth.json'); // Downloaded JSON file
+  var prettyjson = require('prettyjson'); // Un-uglify JSON output
+  var {google} = require('googleapis');
+  var key = require('./auth.json'); // Downloaded JSON file
  
-var viewID = 'ga:159202622'; // Google Analytics view ID
-var analytics = google.analyticsreporting('v4'); // Used for pulling report
-var jwtClient = new google.auth.JWT(key.client_email, // For authenticating and permissions
+  var viewID = 'ga:159202622'; // Google Analytics view ID
+  var analytics = google.analyticsreporting('v4'); // Used for pulling report
+  var jwtClient = new google.auth.JWT(key.client_email, // For authenticating and permissions
                                     null,
                                     key.private_key,
                                     ['https://www.googleapis.com/auth/analytics.readonly'],
                                     null);
  
-
-exports.handler = (event, context, callback) => {
 
  var urls = [];
  var users = [];
@@ -185,7 +186,7 @@ console.log("maxUsers",maxUsers)
         console.log("error.code: "+error.code); 
         console.log("error.connect: "+error.connect); 
         console.log("error: "+error); 
-        callback(null, error);
+        callback(null, "Script Error");
       } else {
         // console.log("body:" + body);
         // console.log("successful: "+url);
