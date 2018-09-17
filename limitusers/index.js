@@ -6,10 +6,6 @@ var visitor = ua('UA-105697068-1', 'LimitLicensesLambda', {strictCidFormat: fals
 
 groupNames = ["jira-administrators", "jira-software-users"]
 licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import"]
-var urls = [];
-var users = [];
-urls.length = 0;
-users.length = 0;
 ctr = 0
 uctr = 0
 gaurl="https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A159202622&start-date=30daysAgo&end-date=today&metrics=ga%3Apageviews&dimensions=ga%3Adimension1&sort=-ga%3Apageviews"
@@ -31,13 +27,19 @@ var jwtClient = new google.auth.JWT(key.client_email, // For authenticating and 
                                     null);
  
 
-
-
 exports.handler = (event, context, callback) => {
 
+ var urls = [];
+ var users = [];
+ urls.length = 0;
+ users.length = 0;
+
   maxUsers = (parseInt(event.maxUsers)) ? parseInt(event.maxUsers) : 80;
+  maxUsersReport = (parseInt(event.maxUsers)) ? parseInt(event.maxUsers) : 80;
   licenseSize = (parseInt(event.licenseSize)) ? parseInt(event.licenseSize) : 100;
   testMode = (event.testMode==="true") ? true : (event.testMode==="false") ? false : true;
+console.log("event.maxUsers",event.maxUsers)
+console.log("maxUsers",maxUsers)
 
   // rootUrl = "http://devjira.oskar-ruegg.com"
   domain = (event.domain) ? event.domain : "testjira.oskar-ruegg.com";
@@ -48,6 +50,12 @@ exports.handler = (event, context, callback) => {
     //console.log(urls);
   }
   console.log("urls: "+urls);
+
+  function sortUsersByPi(a, b) {
+    a = parseInt(a["pi"])
+    b = parseInt(b["pi"])
+    return a > b ? 1 : b > a ? -1 : 0;
+  }
 
   function getUserStats() {
     return new Promise((resolve,reject) => {
@@ -87,10 +95,15 @@ exports.handler = (event, context, callback) => {
 
 
   function identifyUsers() {
+    //console.log("users: ",users)
     // console.log("users.length: ",users.length)
     users = _.uniqBy(users, "name");
     usersBefore = users.length;
     licensedUsers.forEach ( function (user, index, array, done) { /* console.log("user: ",user); */ users = users.filter(function(obj) { return obj.name !== user; } ); maxUsers--; }) 
+    // here the magical sorting needs to happen :-)
+    users = users.sort(sortUsersByPi)
+    //console.log("users: ",users)
+    // var sortedPIs=sortProperties(cities);
     users.reverse()
     if(users[0].pi<1) {
       console.log("no order")
@@ -104,7 +117,10 @@ exports.handler = (event, context, callback) => {
     if(users.length<1) {
       console.log("number of users is smaller than allowed users - no action required")
 
-            visitor.set('cm1', maxUsers);
+            console.log("maxUsersReport",maxUsersReport)
+            console.log("usersBefore",usersBefore)
+            console.log("usersAfter",usersAfter)
+            visitor.set('cm1', maxUsersReport);
             visitor.set('cm2', usersBefore);
             visitor.set('cm3', usersAfter);
       visitor.pageview("/Lambda/LimitLicensedUsers", "http://jira.oskar-ruegg.com/", "Lambda - Limit Licensed Users").send()
@@ -136,7 +152,10 @@ exports.handler = (event, context, callback) => {
           uctr++;
           if(array.length === uctr) {
 
-            visitor.set('cm1', maxUsers);
+            console.log("maxUsersReport",maxUsersReport)
+            console.log("usersBefore",usersBefore)
+            console.log("usersAfter",usersAfter)
+            visitor.set('cm1', maxUsersReport);
             visitor.set('cm2', usersBefore);
             visitor.set('cm3', usersAfter);
             visitor.pageview("/Lambda/LimitLicensedUsers", "http://jira.oskar-ruegg.com/", "Lambda - Limit Licensed Users").send()

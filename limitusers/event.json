@@ -1,6 +1,6 @@
 {
-  "domain": "testjira.oskar-ruegg.com",
-  "maxUsers": "68",
+  "domain": "jira.oskar-ruegg.com",
+  "maxUsers": "95",
   "licenseSize": "100",
-  "testMode": "false"
+  "testMode": "true"
 }
