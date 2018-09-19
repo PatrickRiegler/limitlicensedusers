@@ -1,0 +1,29 @@
+{
+  "name": "limitLicensedJiraUsers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "universal-analytics": "*",
+    "prettyjson": "*",
+    "googleapis": "*",
+    "request": "*",
+    "lodash": "*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node chat-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PatrickRiegler/websocket-prototype.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PatrickRiegler/websocket-prototype/issues"
+  },
+  "homepage": "https://github.com/PatrickRiegler/websocket-prototype#readme"
+}
