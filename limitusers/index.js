@@ -1,5 +1,22 @@
 
+var today
+var todaysusers
+
 exports.handler = (event, context, callback) => {
+
+  todaysusers=[]
+  now = new Date();
+  now.setHours(0, 0, 0, 0);
+  console.log(todaysusers)
+  if(!today) today=now
+  if(today!=now) {
+    todaysusers=[]
+    todaysusers.length=0;
+    today=now
+    console.log("reset todaysusers as date has changed")
+  }
+  console.log("now:",now)
+  console.log("today:",today)
 
   var request = require('request');
   var _ = require('lodash');
@@ -8,7 +25,7 @@ exports.handler = (event, context, callback) => {
   var visitor = ua('UA-105697068-1', 'LimitLicensesLambda', {strictCidFormat: false});
 
   groupNames = ["jira-administrators", "jira-software-users"]
-  licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import"]
+  licensedUsers = ["grehae", "aarfri", "rip", "patrie", "tobmey", "mickol", "techuser", "Import", "gabkat"]
   ctr = 0
   uctr = 0
   gaurl="https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A159202622&start-date=30daysAgo&end-date=today&metrics=ga%3Apageviews&dimensions=ga%3Adimension1&sort=-ga%3Apageviews"
@@ -150,6 +167,7 @@ console.log("maxUsers",maxUsers)
         }, function(error, response, body){
           //console.log("body:" + body);
           console.log("deleted group "+groupName+" for user "+user.name)
+          todaysusers.push[user.name]
           uctr++;
           if(array.length === uctr) {
 
@@ -166,6 +184,7 @@ console.log("maxUsers",maxUsers)
         }).auth('techuser','techuser',true);
       } else {
         console.log("test mode... licenses NOT removed")
+        todaysusers.push[user.name]
         uctr++;
         if(array.length === uctr) 
           callback(null, 'Script Successful');
