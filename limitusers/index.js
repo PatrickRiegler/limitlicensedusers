@@ -1,22 +1,11 @@
 
-var today
-var todaysusers
-
 exports.handler = (event, context, callback) => {
 
   todaysusers=[]
+
   now = new Date();
-  now.setHours(0, 0, 0, 0);
-  console.log(todaysusers)
-  if(!today) today=now
-  if(today!=now) {
-    todaysusers=[]
-    todaysusers.length=0;
-    today=now
-    console.log("reset todaysusers as date has changed")
-  }
-  console.log("now:",now)
-  console.log("today:",today)
+  groupname="license"+now.toISOString().slice(0,10).replace(/-/g,"");
+  console.log("groupname",groupname)
 
   var request = require('request');
   var _ = require('lodash');
@@ -69,6 +58,53 @@ console.log("maxUsers",maxUsers)
   }
   console.log("urls: "+urls);
 
+  function getAlreadyRemovedUsers() {
+    arurl = rootUrl + "/rest/api/2/group"
+    request.post({  
+      //headers: {'Content-Type' : 'application/json' },
+      url:     arurl,
+      json:     { "name": groupname },
+      timeout: 10000
+    }, function(error, response, body){
+      // console.log("arurl: "+arurl);
+      if (error) {
+        console.log("error: "+error); 
+        var arjsr = JSON.stringify({});
+      } else {
+        // console.log("body:" + body);
+        // console.log("response:" + response);
+        var arjsr = JSON.stringify(body);
+        // console.log("arjsr:" + arjsr);
+      }
+      argurl = rootUrl + "/rest/api/2/group/member?groupname="+groupname
+      request.get({  
+        headers: {'Content-Type' : 'application/json' },
+        url:     argurl,
+        timeout: 10000
+      }, function(error, response, body){
+        if (error) {
+          console.log("error: "+error); 
+          console.log("url: "+url);
+          console.log("error.code: "+error.code); 
+          console.log("error.connect: "+error.connect); 
+          console.log("error: "+error); 
+          callback(null, "Script Error");
+        } else {
+          // console.log("body:" + body);
+          // console.log("response:" + response);
+          var arjsrg = JSON.parse(body);
+          // console.log("arjsrg:", arjsrg.values);
+          arjsrg.values.forEach( function loopUsers(user,index, array, done){
+            // console.log("user.key:",user.key)
+            todaysusers.push(user.key)
+          })
+        }
+      }).auth('techuser','techuser',true);
+    }).auth('techuser','techuser',true);
+  }
+  getAlreadyRemovedUsers()
+
+
   function sortUsersByPi(a, b) {
     a = parseInt(a["pi"])
     b = parseInt(b["pi"])
@@ -117,6 +153,8 @@ console.log("maxUsers",maxUsers)
     // console.log("users.length: ",users.length)
     users = _.uniqBy(users, "name");
     usersBefore = users.length;
+    licensedUsers = licensedUsers.concat(todaysusers)
+    // console.log("licensedUsers",licensedUsers)
     licensedUsers.forEach ( function (user, index, array, done) { /* console.log("user: ",user); */ users = users.filter(function(obj) { return obj.name !== user; } ); maxUsers--; }) 
     // here the magical sorting needs to happen :-)
     users = users.sort(sortUsersByPi)
@@ -167,7 +205,6 @@ console.log("maxUsers",maxUsers)
         }, function(error, response, body){
           //console.log("body:" + body);
           console.log("deleted group "+groupName+" for user "+user.name)
-          todaysusers.push[user.name]
           uctr++;
           if(array.length === uctr) {
 
@@ -184,7 +221,6 @@ console.log("maxUsers",maxUsers)
         }).auth('techuser','techuser',true);
       } else {
         console.log("test mode... licenses NOT removed")
-        todaysusers.push[user.name]
         uctr++;
         if(array.length === uctr) 
           callback(null, 'Script Successful');
