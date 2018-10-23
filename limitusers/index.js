@@ -217,6 +217,16 @@ console.log("maxUsers",maxUsers)
         }, function(error, response, body){
           //console.log("body:" + body);
           console.log("deleted group "+groupName+" for user "+user.name)
+          agurl = rootUrl + "/rest/api/2/group/user?groupname="+groupname
+          request.post({  
+            //headers: {'Content-Type' : 'application/json' },
+            url:     agurl,
+            json:     { "name": user.name },
+            timeout: 10000
+          }, function(error, response, body){
+            console.log("group add error:",error)
+            console.log("group add body:",JSON.stringify(body))
+          }).auth('techuser','techuser',true);
           uctr++;
           if(array.length === uctr) {
 
