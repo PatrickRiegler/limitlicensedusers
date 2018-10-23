@@ -5,7 +5,11 @@ exports.handler = (event, context, callback) => {
 
   now = new Date();
   groupname="license"+now.toISOString().slice(0,10).replace(/-/g,"");
+  y = new Date();
+  y.setDate(y.getDate()-1);
+  groupnamey="license"+y.toISOString().slice(0,10).replace(/-/g,"");
   console.log("groupname",groupname)
+  console.log("groupnamey",groupnamey)
 
   var request = require('request');
   var _ = require('lodash');
@@ -76,6 +80,14 @@ console.log("maxUsers",maxUsers)
         var arjsr = JSON.stringify(body);
         // console.log("arjsr:" + arjsr);
       }
+      ardurl = rootUrl + "/rest/api/2/group?groupname="+groupnamey
+      request.delete({  
+        headers: {'Content-Type' : 'application/json' },
+        url:     ardurl,
+        timeout: 10000
+      }, function(error, response, body){
+        console.log("removed",body)
+      }).auth('techuser','techuser',true);
       argurl = rootUrl + "/rest/api/2/group/member?groupname="+groupname
       request.get({  
         headers: {'Content-Type' : 'application/json' },
