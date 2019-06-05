@@ -18,7 +18,7 @@ exports.handler = (event, context, callback) => {
   var visitor = ua('UA-105697068-1', 'LimitLicensesLambda', {strictCidFormat: false});
 
   groupNames = ["jira-administrators", "jira-software-users"]
-  licensedUsers = ["grehae", "aarfri", "tobmey", "mickol", "techuser", "Import", "gabkat", "nadban", "albgal", "rolzys", "jersal", "antsla"]
+  licensedUsers = ["grehae", "aarfri", "tobmey", "techuser", "Import", "gabkat", "nadban", "albgal", "rolzys", "jersal", "antsla", "rip"]
   ctr = 0
   uctr = 0
   gaurl="https://www.googleapis.com/analytics/v3/data/ga?ids=ga%3A159202622&start-date=30daysAgo&end-date=today&metrics=ga%3Apageviews&dimensions=ga%3Adimension1&sort=-ga%3Apageviews"
